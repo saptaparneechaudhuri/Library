@@ -3,6 +3,7 @@ import {View, Text, StyleSheet, FlatList} from 'react-native';
 import bookListApi from '../api/bookListApi';
 import ListItem from '../components/ListItem';
 import {bookData} from '../data/bookInventory';
+import axios from 'axios';
 
 const BooksScreen = ({navigation}) => {
   const [bookList, setBookList] = useState([]);
@@ -12,6 +13,7 @@ const BooksScreen = ({navigation}) => {
       .get('/books')
       .then(response => {
         setBookList(response.data);
+        console.log(response.data);
       })
       .catch(err => {
         console.log(err);
@@ -19,8 +21,8 @@ const BooksScreen = ({navigation}) => {
   };
 
   useEffect(() => {
-    // getBookList();
-    setBookList(bookData);
+    getBookList();
+    // setBookList(bookData);
 
     return () => {
       setBookList([]);
