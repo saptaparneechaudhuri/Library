@@ -32,9 +32,12 @@ mongoose
     console.log(err);
   });
 
-app.listen(3000, () => {
+// process.env.PORT is for production port
+
+var server = app.listen(process.env.PORT || 3000, () => {
   console.log(api);
-  console.log("server is running at http://localhost:3000");
+  let port = server.address().port;
+  console.log("server is running at port " + port);
 });
 
 // Insert many books into the library
