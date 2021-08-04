@@ -5,6 +5,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import BooksScreen from '../screens/BooksScreen';
 import BookDetailScreen from '../screens/BookDetailScreen';
 import TabsStack from './TabsStack';
+import UserStack from './UserStack';
 
 const Stack = createStackNavigator();
 
@@ -21,6 +22,11 @@ const HomeStack = () => {
             fontWeight: 'bold',
           },
         }}>
+        <Stack.Screen
+          name="User"
+          component={UserStack}
+          options={{headerShown: false}}
+        />
         <Stack.Screen
           name="BooksScreen"
           component={TabsStack}

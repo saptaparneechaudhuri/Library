@@ -1,29 +1,39 @@
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-const { bookData } = require("./data/bookInventory");
-const { BookInventory } = require("./models/bookInventory");
+
 const cors = require("cors");
+const authJwt = require("./helpers/jwt");
+const morgan = require("morgan");
+const errorHandler = require("./helpers/error-handler");
 
 require("dotenv/config");
 
 const api = process.env.API_URL;
 
-//routes
-const bookInventoryRouter = require("./routes/books");
-const completeInventoryRouter = require("./routes/completeInventory");
-
-//middleware
+//middlewares should be used before calling routes
 app.use(express.json());
-app.use(`${api}/books`, bookInventoryRouter);
-app.use(`${api}/completeinventory`, completeInventoryRouter);
+app.use(morgan("tiny"));
 app.use(cors());
 app.options("*", cors());
+app.use(authJwt());
+app.use(errorHandler);
+
+// Routes
+const bookInventoryRouter = require("./routes/books");
+const completeInventoryRouter = require("./routes/completeInventory");
+const bookIssues = require("./routes/issues");
+const userRoutes = require("./routes/user");
+app.use(`${api}/books`, bookInventoryRouter);
+app.use(`${api}/completeinventory`, completeInventoryRouter);
+app.use(`${api}/bookissue`, bookIssues);
+app.use(`${api}/user`, userRoutes);
 
 mongoose
   .connect(process.env.CONNECTION_STRING, {
     useUnifiedTopology: true,
     useNewUrlParser: true,
+    useCreateIndex: true,
   })
   .then(() => {
     console.log("Database Connected.");

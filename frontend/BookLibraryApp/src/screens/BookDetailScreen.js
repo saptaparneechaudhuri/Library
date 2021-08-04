@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,9 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
+
+import issuesApi from '../api/issuesApi';
+import bookDetailsApi from '../api/bookDetailsApi';
 
 const DetailItem = props => {
   return (
@@ -19,6 +22,34 @@ const DetailItem = props => {
 
 const BookDetailScreen = ({route}) => {
   const {item} = route.params;
+  const [count, setCount] = useState(0);
+
+  const lendBook = book => {
+    // Add book to the IssueReturn collection in the database
+    // if count <= book.count
+    console.log(count, book.count);
+    if (count <= book.count) {
+      issuesApi
+        .post('/bookissue', {
+          booksIssued: book._id,
+
+          image: book.image,
+          user: '6109002a5bb3642734135ebd',
+        })
+        .then(response => {
+          // console.log(response);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+      setCount(prevCount => prevCount + 1);
+    } else {
+      console.log('Book Unavailable');
+    }
+  };
+
+  // console.log(item);
+
   return (
     <ScrollView>
       <Image
@@ -26,13 +57,16 @@ const BookDetailScreen = ({route}) => {
         source={{uri: item.image}}
         resizeMode="contain"
       />
-      <TouchableOpacity style={styles.buttonContainer}>
+      <TouchableOpacity
+        style={styles.buttonContainer}
+        onPress={() => lendBook(item)}>
         <Text style={styles.buttonText}>Lend</Text>
       </TouchableOpacity>
       <View style={{borderWidth: 1, marginTop: 15}}>
         <DetailItem>Title: {item.title}</DetailItem>
         <DetailItem>Count: {item.count}</DetailItem>
         <DetailItem>Authors: {item.authors.map(author => author)}</DetailItem>
+        {/* <DetailItem>BookUIDs: {bookDetail.bookUID.map(uid => uid)}</DetailItem> */}
       </View>
     </ScrollView>
   );
