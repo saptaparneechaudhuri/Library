@@ -19,6 +19,7 @@ const Login = ({navigation}) => {
       setError('Please fill in your credentials');
     } else {
       console.log('success');
+      navigation.navigate('BooksScreen');
     }
   };
 

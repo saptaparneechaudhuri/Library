@@ -19,6 +19,7 @@ function authJwt() {
       { url: /\/api\/v1\/bookissue(.*)/, methods: ["GET", "OPTIONS", "POST"] },
 
       `${api}/user/login`,
+      `${api}/user`,
     ],
   });
 }

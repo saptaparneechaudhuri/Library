@@ -11,6 +11,7 @@ import {
 
 import issuesApi from '../api/issuesApi';
 import bookDetailsApi from '../api/bookDetailsApi';
+import Toast from 'react-native-toast-message';
 
 const DetailItem = props => {
   return (
@@ -20,7 +21,7 @@ const DetailItem = props => {
   );
 };
 
-const BookDetailScreen = ({route}) => {
+const BookDetailScreen = ({route, navigation}) => {
   const {item} = route.params;
   const [count, setCount] = useState(0);
 
@@ -37,10 +38,27 @@ const BookDetailScreen = ({route}) => {
           user: '6109002a5bb3642734135ebd',
         })
         .then(response => {
-          // console.log(response);
+          if (response.status === 200) {
+            Toast.show({
+              topOffset: 60,
+              type: 'success',
+              text1: `${book.title} Issued`,
+              text2: 'Please visit issues screen',
+            });
+
+            setTimeout(() => {
+              navigation.navigate('BooksScreen');
+            }, 500);
+          }
         })
         .catch(err => {
           console.log(err);
+          Toast.show({
+            topOffset: 60,
+            type: 'error',
+            text1: 'Book Issue Failed',
+            text2: 'Something went wrong',
+          });
         });
       setCount(prevCount => prevCount + 1);
     } else {

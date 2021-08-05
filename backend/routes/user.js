@@ -27,6 +27,8 @@ router.get(`/:id`, async (req, res) => {
   res.send(user);
 });
 
+//user register
+
 router.post("/", async (req, res) => {
   let user = new User({
     name: req.body.name,
