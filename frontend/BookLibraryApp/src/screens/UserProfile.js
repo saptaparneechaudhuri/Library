@@ -11,6 +11,7 @@ import userProfileApi from '../api/userProfileApi';
 const UserProfile = ({navigation}) => {
   const context = useContext(AuthGlobal);
   const [userProfile, setUserProfile] = useState();
+  const [tokens, setTokens] = useState(3);
 
   useEffect(() => {
     if (
@@ -49,6 +50,9 @@ const UserProfile = ({navigation}) => {
         <Text style={{margin: 10}}>
           Email: {userProfile ? userProfile.email : ''}
         </Text>
+      </View>
+      <View style={{marginTop: 20}}>
+        <Text style={{margin: 10}}>Tokens: {tokens}</Text>
       </View>
       <View style={{marginTop: 80}}>
         <Button
