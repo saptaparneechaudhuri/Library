@@ -28,7 +28,7 @@ const BookDetailScreen = ({route, navigation}) => {
   const [user, setUser] = useState('');
 
   useEffect(() => {
-    // get the user from AsyncStorage. The user was set in UserProfile Screen
+    // get the user id from AsyncStorage. The user was set in UserProfile Screen
     AsyncStorage.getItem('user').then(res => setUser(res));
 
     return () => {

@@ -30,7 +30,7 @@ const UserProfile = ({navigation}) => {
           .then(response => {
             console.log(response.data.name);
             setUserProfile(response.data);
-            // Set the user name in Async Storage
+            // Set the user id in Async Storage
             AsyncStorage.setItem('user', response.data.id);
           });
       })
