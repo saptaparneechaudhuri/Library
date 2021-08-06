@@ -1,13 +1,22 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {View, Text, StyleSheet, Button} from 'react-native';
 import FormContainer from '../../components/FormContainer';
 import Input from '../../components/Input';
 import Error from '../../components/Error';
+import AuthGlobal from '../../Context/store/AuthGlobal';
+import {loginUser} from '../../Context/actions/AuthActions';
 
 const Login = ({navigation}) => {
+  const context = useContext(AuthGlobal);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (context.stateUser.isAuthenticated === true) {
+      navigation.navigate('BooksScreen');
+    }
+  }, [context.stateUser.isAuthenticated]);
 
   const handleSubmit = () => {
     const user = {
@@ -19,7 +28,7 @@ const Login = ({navigation}) => {
       setError('Please fill in your credentials');
     } else {
       console.log('success');
-      navigation.navigate('BooksScreen');
+      loginUser(user, context.dispatch);
     }
   };
 

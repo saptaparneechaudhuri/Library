@@ -58,7 +58,11 @@ const BooksScreen = ({navigation}) => {
   return (
     <View>
       {isLoading ? (
-        <ActivityIndicator animating={true} size="large" />
+        <ActivityIndicator
+          animating={true}
+          size="large"
+          style={{marginTop: 60}}
+        />
       ) : (
         <FlatList
           numColumns={2}

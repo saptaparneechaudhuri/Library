@@ -48,6 +48,7 @@ const IssuesScreen = () => {
         <View style={{marginHorizontal: 5, marginTop: 5}}>
           <Text numberOfLines={2}>bookId: {item.id}</Text>
           <Text>User: {item.user.name}</Text>
+          <Text>IssuedOn: {item.issueDate}</Text>
         </View>
       </View>
     );

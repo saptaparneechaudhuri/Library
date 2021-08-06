@@ -1,22 +1,21 @@
 import jwt_decode from 'jwt-decode';
-import AsyncStorage from '@react-native-community/async-storage';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 // import loginApi from '../../api/loginApi';
 
 export const SET_CURRENT_USER = 'SET_CURRENT_USER';
 
 export const loginUser = (user, dispatch) => {
-  fetch('https://library-server-1.herokuapp.com/api/v1/user/login', {
+  fetch(`https://library-server-1.herokuapp.com/api/v1/user/login`, {
     method: 'POST',
-    body: JSON.stringify(),
+    body: JSON.stringify(user),
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
   })
-    .then(response => {
-      response.json();
-    })
+    .then(res => res.json())
     .then(data => {
       if (data) {
         const token = data.token;
@@ -27,17 +26,7 @@ export const loginUser = (user, dispatch) => {
         logoutUser(dispatch);
       }
     })
-    .catch(err => {
-      console.log(err);
-      Toast.show({
-        topOffset: 60,
-        type: 'error',
-        text1: 'Login Failed',
-        text2: 'Please provide correct credentials',
-      });
-      // logout
-      logoutUser(dispatch);
-    });
+    .catch(err => console.log(err));
 };
 
 export const setCurrentUser = (decoded, user) => {

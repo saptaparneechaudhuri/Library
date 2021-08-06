@@ -32,6 +32,7 @@ const HomeStack = () => {
           component={TabsStack}
           options={{
             headerTitle: 'Library',
+            headerLeft: () => null,
           }}
         />
         <Stack.Screen name="BookDetails" component={BookDetailScreen} />

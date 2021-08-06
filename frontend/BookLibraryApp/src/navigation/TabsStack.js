@@ -2,6 +2,7 @@ import React from 'react';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import BooksScreen from '../screens/BooksScreen';
 import IssuesScreen from '../screens/IssuesScreens';
+import UserProfile from '../screens/UserProfile';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -23,6 +24,7 @@ const TabsStack = () => {
       }}>
       <Tab.Screen name="Books" component={BooksScreen} />
       <Tab.Screen name="Issues" component={IssuesScreen} />
+      <Tab.Screen name="User" component={UserProfile} />
     </Tab.Navigator>
     // </NavigationContainer>
   );

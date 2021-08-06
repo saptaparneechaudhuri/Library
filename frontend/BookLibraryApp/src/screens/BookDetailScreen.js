@@ -12,6 +12,7 @@ import {
 import issuesApi from '../api/issuesApi';
 import bookDetailsApi from '../api/bookDetailsApi';
 import Toast from 'react-native-toast-message';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const DetailItem = props => {
   return (
@@ -24,46 +25,53 @@ const DetailItem = props => {
 const BookDetailScreen = ({route, navigation}) => {
   const {item} = route.params;
   const [count, setCount] = useState(0);
+  const [user, setUser] = useState('');
+
+  useEffect(() => {
+    // get the user from AsyncStorage. The user was set in UserProfile Screen
+    AsyncStorage.getItem('user').then(res => setUser(res));
+
+    return () => {
+      setUser('');
+    };
+  }, []);
 
   const lendBook = book => {
     // Add book to the IssueReturn collection in the database
     // if count <= book.count
     console.log(count, book.count);
-    if (count <= book.count) {
-      issuesApi
-        .post('/bookissue', {
-          booksIssued: book._id,
+    console.log(user);
 
-          image: book.image,
-          user: '6109002a5bb3642734135ebd',
-        })
-        .then(response => {
-          if (response.status === 200) {
-            Toast.show({
-              topOffset: 60,
-              type: 'success',
-              text1: `${book.title} Issued`,
-              text2: 'Please visit issues screen',
-            });
+    issuesApi
+      .post('/bookissue', {
+        booksIssued: book._id,
 
-            setTimeout(() => {
-              navigation.navigate('BooksScreen');
-            }, 500);
-          }
-        })
-        .catch(err => {
-          console.log(err);
+        image: book.image,
+        user: user,
+      })
+      .then(response => {
+        if (response.status === 200) {
           Toast.show({
             topOffset: 60,
-            type: 'error',
-            text1: 'Book Issue Failed',
-            text2: 'Something went wrong',
+            type: 'success',
+            text1: `${book.title} Issued`,
+            text2: 'Please visit issues screen',
           });
+
+          setTimeout(() => {
+            navigation.navigate('BooksScreen');
+          }, 500);
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        Toast.show({
+          topOffset: 60,
+          type: 'error',
+          text1: 'Book Issue Failed',
+          text2: 'Something went wrong',
         });
-      setCount(prevCount => prevCount + 1);
-    } else {
-      console.log('Book Unavailable');
-    }
+      });
   };
 
   // console.log(item);

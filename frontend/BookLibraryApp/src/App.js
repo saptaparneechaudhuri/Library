@@ -12,15 +12,15 @@ import HomeStack from './navigation/HomeStack';
 import Toast from 'react-native-toast-message';
 
 // Context API
-// import Auth from './Context/store/Auth';
+import Auth from './Context/store/Auth';
 
 const App = () => {
   return (
-    <>
+    <Auth>
       <StatusBar backgroundColor="#00CCCC" />
       <HomeStack />
       <Toast ref={ref => Toast.setRef(ref)} />
-    </>
+    </Auth>
   );
 };
 export default App;
