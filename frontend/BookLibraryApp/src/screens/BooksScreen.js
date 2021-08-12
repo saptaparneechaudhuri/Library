@@ -1,12 +1,13 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, FlatList} from 'react-native';
+import React, {useEffect, useState, useCallback} from 'react';
+import {View, Text, StyleSheet, FlatList, Dimensions} from 'react-native';
 import {ActivityIndicator} from 'react-native-paper';
 import bookListApi from '../api/bookListApi';
 import ListItem from '../components/ListItem';
-import {bookData} from '../data/bookInventory';
-import bookDetailsApi from '../api/bookDetailsApi';
+
 import {Header, Icon, Item, Input} from 'native-base';
-import SearchedBook from './SearchedBook';
+
+import {useFocusEffect} from '@react-navigation/native';
+var {height, width} = Dimensions.get('window');
 
 const BooksScreen = ({navigation}) => {
   const [bookList, setBookList] = useState([]);
@@ -20,6 +21,7 @@ const BooksScreen = ({navigation}) => {
       .then(response => {
         setBookList(response.data);
         setBooksFiltered(response.data);
+        setIsLoading(false);
         // console.log(response.data);
       })
       .catch(err => {
@@ -28,27 +30,19 @@ const BooksScreen = ({navigation}) => {
   };
 
   // TODO useFocuseffecet
+  useFocusEffect(
+    useCallback(() => {
+      getBookList();
 
-  useEffect(() => {
-    getBookList();
-    // setBookList(bookData);
+      return () => {
+        setBookList([]);
+        setBooksFiltered([]);
 
-    setIsLoading(false);
+        setIsLoading(true);
+      };
+    }, []),
+  );
 
-    return () => {
-      setBookList([]);
-      setBooksFiltered([]);
-
-      setIsLoading(true);
-    };
-  }, []);
-
-  // const getBookDetails = id => {
-  //   bookDetailsApi.get(`/${id}`).then(response => {
-  //     // console.log(response.data);
-  //     setBookDetail(response.data);
-  //   });
-  // };
   // Serach a book
   const searchBook = text => {
     // if no text is entered into the search bar, display all books
@@ -66,8 +60,6 @@ const BooksScreen = ({navigation}) => {
       <ListItem
         item={item}
         onSelect={() => {
-          // getBookDetails(item._id);
-          // console.log(bookDetail);
           navigation.navigate('BookDetails', {
             item: item,
           });
@@ -84,29 +76,19 @@ const BooksScreen = ({navigation}) => {
         </Item>
       </Header>
 
-      <FlatList
-        numColumns={2}
-        data={booksFiltered}
-        renderItem={renderItem}
-        keyExtractor={item => item.title}
-        onEndReachedThreshold={0.1}
-      />
-
-      {/* {isLoading ? (
-        <ActivityIndicator
-          animating={true}
-          size="large"
-          style={{marginTop: 60}}
-        />
+      {isLoading === true ? (
+        <View style={styles.spinner}>
+          <ActivityIndicator size="large" color="blue" />
+        </View>
       ) : (
         <FlatList
           numColumns={2}
-          data={bookList}
+          data={booksFiltered}
           renderItem={renderItem}
           keyExtractor={item => item.title}
           onEndReachedThreshold={0.1}
         />
-      )} */}
+      )}
     </View>
   );
 };
@@ -118,5 +100,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  spinner: {
+    height: height / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

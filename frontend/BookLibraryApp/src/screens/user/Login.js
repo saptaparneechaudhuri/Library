@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useContext} from 'react';
-import {View, Text, StyleSheet, Button} from 'react-native';
+import {View, Text, StyleSheet, Button, Keyboard} from 'react-native';
 import FormContainer from '../../components/FormContainer';
 import Input from '../../components/Input';
 import Error from '../../components/Error';
@@ -27,7 +27,7 @@ const Login = ({navigation}) => {
     if (email === '' || password === '') {
       setError('Please fill in your credentials');
     } else {
-      console.log('success');
+      // console.log('success');
       loginUser(user, context.dispatch);
     }
   };
@@ -51,7 +51,12 @@ const Login = ({navigation}) => {
       />
       <View style={styles.buttonGroup}>
         {error ? <Error message={error} /> : null}
-        <Button title="Login" onPress={() => handleSubmit()} />
+        <Button
+          title="Login"
+          onPress={() => {
+            handleSubmit();
+          }}
+        />
       </View>
       <View style={({marginTop: 40}, styles.buttonGroup)}>
         <Text style={styles.middleText}>Don't have account?</Text>

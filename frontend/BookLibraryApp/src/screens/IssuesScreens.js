@@ -1,7 +1,15 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {View, Text, FlatList, Image, StyleSheet} from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  StyleSheet,
+  Dimensions,
+} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import {ActivityIndicator} from 'react-native-paper';
+var {height, width} = Dimensions.get('window');
 
 import issuesApi from '../api/issuesApi';
 
@@ -13,6 +21,7 @@ const IssuesScreen = () => {
     issuesApi.get('/bookissue').then(response => {
       // console.log(response.data);
       setIssues(response.data);
+      setIsLoading(false);
     });
   };
 
@@ -20,7 +29,6 @@ const IssuesScreen = () => {
     useCallback(() => {
       getIssueList();
       // console.log(issues);
-      setIsLoading(false);
 
       return () => {
         setIssues([]);
@@ -28,14 +36,6 @@ const IssuesScreen = () => {
       };
     }, []),
   );
-
-  // useEffect(() => {
-  //   getIssueList();
-
-  //   return () => {
-  //     setIssues([]);
-  //   };
-  // }, []);
 
   const renderItem = ({item}) => {
     return (
@@ -57,7 +57,9 @@ const IssuesScreen = () => {
   return (
     <View style={styles.container}>
       {isLoading ? (
-        <ActivityIndicator animating={true} size="large" />
+        <View style={styles.spinner}>
+          <ActivityIndicator size="large" color="blue" />
+        </View>
       ) : (
         <FlatList
           data={issues}
@@ -84,6 +86,11 @@ const styles = StyleSheet.create({
 
     padding: 5,
     marginBottom: 5,
+  },
+  spinner: {
+    height: height / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

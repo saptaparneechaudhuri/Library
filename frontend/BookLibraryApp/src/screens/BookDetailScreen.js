@@ -86,7 +86,7 @@ const BookDetailScreen = ({route, navigation}) => {
       <TouchableOpacity
         style={styles.buttonContainer}
         onPress={() => lendBook(item)}>
-        <Text style={styles.buttonText}>Lend</Text>
+        <Text style={styles.buttonText}>Issue</Text>
       </TouchableOpacity>
       <View style={{borderWidth: 1, marginTop: 15}}>
         <DetailItem>Title: {item.title}</DetailItem>
