@@ -38,16 +38,25 @@ const bookInventorySchema = mongoose.Schema({
   },
 });
 
-// Create a virtual for bookUID. Add this virtual as a field in completeInventory Schema
-let bookInventorySchemaVirtual = bookInventorySchema.virtual("bookUID");
+// // Create a virtual for bookUID. Add this virtual as a field in completeInventory Schema
+// let bookInventorySchemaVirtual = bookInventorySchema.virtual("bookUID");
+// use a virtual to get id as id and not _id
 
-bookInventorySchemaVirtual.get(function () {
-  let res = [];
-  for (let i = 0; i < this.count; i++) {
-    let id = `${this.ISBN}-${this.subjectCode}-${i + 1}`;
-    res.push(id);
-  }
-  return res;
+bookInventorySchema.virtual("id").get(function () {
+  return this._id.toHexString();
 });
+
+bookInventorySchema.set("toJSON", {
+  virtuals: true,
+});
+
+// bookInventorySchemaVirtual.get(function () {
+//   let res = [];
+//   for (let i = 0; i < this.count; i++) {
+//     let id = `${this.ISBN}-${this.subjectCode}-${i + 1}`;
+//     res.push(id);
+//   }
+//   return res;
+// });
 
 exports.BookInventory = mongoose.model("BookInventory", bookInventorySchema);

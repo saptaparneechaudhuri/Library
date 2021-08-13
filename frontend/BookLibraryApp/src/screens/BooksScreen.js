@@ -29,7 +29,6 @@ const BooksScreen = ({navigation}) => {
       });
   };
 
-  // TODO useFocuseffecet
   useFocusEffect(
     useCallback(() => {
       getBookList();
@@ -68,7 +67,7 @@ const BooksScreen = ({navigation}) => {
     );
   };
   return (
-    <View>
+    <View style={styles.container}>
       <Header searchBar rounded style={{backgroundColor: '#FFFF'}}>
         <Item>
           <Icon name="ios-search" />
@@ -86,7 +85,6 @@ const BooksScreen = ({navigation}) => {
           data={booksFiltered}
           renderItem={renderItem}
           keyExtractor={item => item.title}
-          onEndReachedThreshold={0.1}
         />
       )}
     </View>
@@ -98,8 +96,8 @@ export default BooksScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    // justifyContent: 'center',
+    // alignItems: 'center',
   },
   spinner: {
     height: height / 2,

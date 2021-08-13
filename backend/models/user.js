@@ -18,6 +18,11 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  library_tokens: {
+    type: Number,
+    required: true,
+    default: 3,
+  },
 });
 
 // use a virtual to get id as id and not _id
@@ -25,6 +30,10 @@ const userSchema = new mongoose.Schema({
 userSchema.virtual("id").get(function () {
   return this._id.toHexString();
 });
+
+// userSchema.virtual("library_tokens").get(function () {
+//   return 3;
+// });
 
 // set the virtuals to show
 

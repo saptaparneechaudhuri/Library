@@ -16,7 +16,7 @@ var storage = multer.diskStorage({
 
 const uploadOptions = multer({ storage: storage });
 
-// Sends the list of books issued for a user by using user Id (TODO)
+// get all books issued
 
 router.get("/", async (req, res) => {
   // const issueList = await IssueReturn.find();
@@ -51,13 +51,65 @@ router.post("/", async (req, res) => {
 
 // Get the books for a particular user
 router.get(`/get/userbooks/:userid`, async (req, res) => {
-  const userBookList = await IssueReturn.find({ user: req.params.userid });
-  console.log(userBookList);
+  const userBookList = await IssueReturn.find({
+    user: req.params.userid,
+  }).populate("user");
+  // console.log(userBookList);
 
   if (!userBookList) {
     res.status(500).json({ success: false });
   }
   res.send(userBookList);
+});
+
+// Delete a book issued by a particular user
+router.delete("/get/userbooks/:userid/:bookid", async (req, res) => {
+  var user = await IssueReturn.findOne({
+    user: req.params.userid,
+    booksIssued: req.params.bookid,
+  });
+  if (user) {
+    console.log("user found");
+  }
+  IssueReturn.findOneAndDelete({
+    user: req.params.userid,
+    booksIssued: req.params.bookid,
+  })
+    .then((book) => {
+      if (book) {
+        return res.status(200).json({
+          success: true,
+          message: "the book is deleted!",
+        });
+      } else {
+        return res
+          .status(404)
+          .json({ success: false, message: "book not found!" });
+      }
+    })
+    .catch((err) => {
+      return res.status(500).json({ success: false, error: err });
+    });
+});
+
+// Delete a book
+router.delete("/get/userbooks/:id", (req, res) => {
+  IssueReturn.findByIdAndRemove(req.params.id)
+    .then((book) => {
+      if (book) {
+        return res.status(200).json({
+          success: true,
+          message: "the book is deleted!",
+        });
+      } else {
+        return res
+          .status(404)
+          .json({ success: false, message: "book not found!" });
+      }
+    })
+    .catch((err) => {
+      return res.status(500).json({ success: false, error: err });
+    });
 });
 
 module.exports = router;

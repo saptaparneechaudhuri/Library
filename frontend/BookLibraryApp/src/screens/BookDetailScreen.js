@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {
   View,
   Text,
@@ -11,6 +11,9 @@ import {
 
 import issuesApi from '../api/issuesApi';
 import bookDetailsApi from '../api/bookDetailsApi';
+import userProfileApi from '../api/userProfileApi';
+import AuthGlobal from '../Context/store/AuthGlobal';
+
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -24,33 +27,65 @@ const DetailItem = props => {
 
 const BookDetailScreen = ({route, navigation}) => {
   const {item} = route.params;
-  const [count, setCount] = useState(0);
-  const [user, setUser] = useState('');
+  const context = useContext(AuthGlobal);
+
+  const [tokens, setTokens] = useState(0);
+  const [jwtToken, setJwtToken] = useState();
+
+  // useEffect(() => {
+  //   // get the user id from AsyncStorage. The user was set in UserProfile Screen
+  //   AsyncStorage.getItem('user').then(res => setUser(res));
+
+  //   return () => {
+  //     setUser('');
+  //   };
+  // }, []);
 
   useEffect(() => {
-    // get the user id from AsyncStorage. The user was set in UserProfile Screen
-    AsyncStorage.getItem('user').then(res => setUser(res));
+    if (
+      context.stateUser.isAuthenticated === false ||
+      context.stateUser.isAuthenticated === null
+    ) {
+      navigation.navigate('Login');
+    }
+    // console.log(context.stateUser.user.userId);
+    AsyncStorage.getItem('jwt')
+      .then(res => {
+        setJwtToken(res);
+        userProfileApi
+          .get(`/${context.stateUser.user.userId}`, {
+            headers: {Authorization: `Bearer ${res}`},
+          })
+          .then(response => {
+            setTokens(response.data.library_tokens);
+
+            // Set the user id in Async Storage
+            AsyncStorage.setItem('user', response.data.id);
+          });
+      })
+      .catch(error => console.log(error));
 
     return () => {
-      setUser('');
+      // setUserProfile('');
+      // setTokens(0);
     };
-  }, []);
+  }, [context.stateUser.isAuthenticated]);
 
   const lendBook = book => {
     // Add book to the IssueReturn collection in the database
-    // if count <= book.count
-    console.log(count, book.count);
-    console.log(user);
 
     issuesApi
       .post('/bookissue', {
         booksIssued: book._id,
 
         image: book.image,
-        user: user,
+        user: context.stateUser.user.userId,
       })
       .then(response => {
         if (response.status === 200) {
+          // Decrement user's library token
+          setTokens(tokens - 1);
+          // console.log(tokens);
           Toast.show({
             topOffset: 60,
             type: 'success',
@@ -58,9 +93,24 @@ const BookDetailScreen = ({route, navigation}) => {
             text2: 'Please visit issues screen',
           });
 
-          setTimeout(() => {
-            navigation.navigate('BooksScreen');
-          }, 500);
+          // Modify the user's library tokens
+          userProfileApi
+            .put(
+              `/${context.stateUser.user.userId}`,
+              {
+                library_tokens: tokens,
+              },
+              {
+                headers: {Authorization: `Bearer ${jwtToken}`},
+              },
+            )
+            .then(response => {
+              console.log('tokens', tokens);
+            });
+
+          // setTimeout(() => {
+          //   navigation.navigate('BooksScreen');
+          // }, 500);
         }
       })
       .catch(err => {
@@ -85,13 +135,17 @@ const BookDetailScreen = ({route, navigation}) => {
       />
       <TouchableOpacity
         style={styles.buttonContainer}
-        onPress={() => lendBook(item)}>
+        onPress={() => {
+          setTokens(tokens - 1);
+          lendBook(item);
+        }}>
         <Text style={styles.buttonText}>Issue</Text>
       </TouchableOpacity>
       <View style={{borderWidth: 1, marginTop: 15}}>
         <DetailItem>Title: {item.title}</DetailItem>
         <DetailItem>Count: {item.count}</DetailItem>
         <DetailItem>Authors: {item.authors.map(author => author)}</DetailItem>
+        <Text>{tokens}</Text>
         {/* <DetailItem>BookUIDs: {bookDetail.bookUID.map(uid => uid)}</DetailItem> */}
       </View>
     </ScrollView>

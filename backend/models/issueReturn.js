@@ -20,8 +20,9 @@ const issueReturnSchema = mongoose.Schema({
   status: {
     type: String,
     required: true,
-    default: "Pending",
+    default: "Return Due",
   },
+
   issueDate: {
     type: Date,
     default: Date.now,
@@ -43,6 +44,14 @@ issueReturnSchema.virtual("issueDateFormat").get(function () {
   return +day + 1 + "/" + (+month + 1) + "/" + year;
 });
 
+issueReturnSchema.virtual("returnDateFormat").get(function () {
+  let day = this.issueDate.getDay();
+  let month = this.issueDate.getMonth();
+  // let newDate = new Date()
+  let year = this.issueDate.getFullYear();
+
+  return day + "/" + (+month + 2) + "/" + year;
+});
 // set the virtuals to show
 
 issueReturnSchema.set("toJSON", {

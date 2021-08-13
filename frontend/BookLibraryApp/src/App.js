@@ -10,6 +10,7 @@ import React from 'react';
 import {StatusBar} from 'react-native';
 import HomeStack from './navigation/HomeStack';
 import Toast from 'react-native-toast-message';
+// import {Provider} from 'react-redux';
 
 // Context API
 import Auth from './Context/store/Auth';

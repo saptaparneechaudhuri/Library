@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose");
+
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -70,6 +72,30 @@ router.post("/login", async (req, res) => {
   } else {
     res.status(400).send("password is wrong!");
   }
+});
+
+// Update librray_tokens of a user
+router.put("/:id", async (req, res) => {
+  if (!mongoose.isValidObjectId(req.params.id)) {
+    return res.status(400).send("Invalid User Id");
+  }
+  mongoose.set("useFindAndModify", false);
+
+  const user = await User.findById(req.params.id);
+  if (!user) return res.status(400).send("User Not found!");
+
+  const updatedLibraryToken = await User.findByIdAndUpdate(
+    req.params.id,
+    {
+      library_tokens: req.body.library_tokens,
+    },
+    { new: true }
+  );
+
+  if (!updatedLibraryToken)
+    return res.status(500).send("the token cannot be updated!");
+
+  res.send(updatedLibraryToken);
 });
 
 module.exports = router;
