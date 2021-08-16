@@ -11,6 +11,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {useFocusEffect} from '@react-navigation/native';
+import {ActivityIndicator} from 'react-native-paper';
 
 import AuthGlobal from '../Context/store/AuthGlobal';
 import {logoutUser} from '../Context/actions/AuthActions';
@@ -27,6 +28,7 @@ const UserProfile = ({navigation}) => {
   const [userBooks, setUserBooks] = useState([]);
   const [tokens, setTokens] = useState();
   const [jwtToken, setJwtToken] = useState();
+  const [isLoading, setIsLoading] = useState(true);
 
   useFocusEffect(
     useCallback(() => {
@@ -58,6 +60,7 @@ const UserProfile = ({navigation}) => {
             })
             .then(response => {
               setUserBooks(response.data);
+              setIsLoading(false);
             });
         })
         .catch(error => console.log(error));
@@ -65,11 +68,37 @@ const UserProfile = ({navigation}) => {
       return () => {
         setUserProfile('');
         setUserBooks([]);
+        // setTokens(0);
+        setIsLoading(true);
       };
     }, [context.stateUser.isAuthenticated]),
   );
 
+  // PUT request to update the library_tokens in the datsbase
+
+  useEffect(() => {
+    userProfileApi
+      .put(
+        `/${context.stateUser.user.userId}`,
+        {
+          library_tokens: tokens,
+        },
+        {
+          headers: {Authorization: `Bearer ${jwtToken}`},
+        },
+      )
+      .then(response => {
+        // console.log(response.data);
+        console.log('tokens', tokens);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }, [tokens]);
+
   const returnBooks = id => {
+    // increment library tokens on return
+    setTokens(tokens + 1);
     removeBookIssuedByUserApi
       .delete(`/${id}`, {
         headers: {Authorization: `Bearer ${jwtToken}`},
@@ -97,7 +126,7 @@ const UserProfile = ({navigation}) => {
         </View>
         <View style={{marginTop: 20}}>
           <Text style={{margin: 10}}>
-            Library Tokens: {userProfile ? tokens : ''}
+            Library Tokens Left: {userProfile ? tokens : ''}
           </Text>
         </View>
 
@@ -111,40 +140,50 @@ const UserProfile = ({navigation}) => {
           />
         </View>
       </View>
-      <View style={{marginTop: 80}}>
+      <View style={{marginTop: 40}}>
         <Text style={{margin: 10, fontSize: 20}}>My Shelf</Text>
       </View>
-      <ScrollView>
-        {userBooks.map(item => {
-          console.log(item._id);
-          return (
-            <View style={styles.imageContainer}>
-              <Image
-                source={{uri: item.image}}
-                style={styles.image}
-                resizeMode="contain"
-              />
-              <View style={{marginHorizontal: 5, marginTop: 5}}>
-                <Text numberOfLines={2}>bookId: {item.id}</Text>
+      <View style={styles.subContainer}>
+        {isLoading ? (
+          <View style={styles.spinner}>
+            <ActivityIndicator size="large" color="blue" />
+          </View>
+        ) : (
+          <ScrollView>
+            {userBooks.map(item => {
+              // console.log(item._id);
+              return (
+                <View style={styles.imageContainer} key={item._id}>
+                  <View>
+                    <Image
+                      source={{uri: item.image}}
+                      style={styles.image}
+                      resizeMode="contain"
+                    />
+                  </View>
+                  <View style={{marginHorizontal: 5, marginTop: 5}}>
+                    <Text numberOfLines={2}>bookId: {item.id}</Text>
 
-                <Text>Issued On: {item.issueDateFormat}</Text>
-                <Text>Return Due By: {item.returnDateFormat}</Text>
-                <Text>Status: {item.status}</Text>
-                <View style={{width: '80%'}}>
-                  <Button
-                    title="Return"
-                    onPress={() => {
-                      // on return increment token and remove from shelf TODO
-                      // remove book from issues
-                      returnBooks(item._id);
-                    }}
-                  />
+                    <Text>Issued On: {item.issueDateFormat}</Text>
+                    <Text>Return Due By: {item.returnDateFormat}</Text>
+                    {/* <Text>Status: {item.status}</Text> */}
+                    <View style={{width: '80%', marginTop: 10}}>
+                      <Button
+                        title="Return"
+                        onPress={() => {
+                          // on return increment token and remove from shelf TODO
+                          // remove book from issues
+                          returnBooks(item._id);
+                        }}
+                      />
+                    </View>
+                  </View>
                 </View>
-              </View>
-            </View>
-          );
-        })}
-      </ScrollView>
+              );
+            })}
+          </ScrollView>
+        )}
+      </View>
     </>
   );
 };
@@ -153,27 +192,32 @@ const styles = StyleSheet.create({
   container: {
     flex: 2,
     alignItems: 'center',
+    height: 200,
   },
   subContainer: {
-    flex: 2,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    margin: 10,
-    width: '90%',
+    flex: 3,
+    // flexDirection: 'row',
+    alignSelf: 'center',
+    // justifyContent: 'space-between',
+    margin: 5,
+    width: '100%',
     // borderWidth: 1,
-    padding: 10,
+    padding: 5,
+    height: '100%',
+    // position: 'relative',
   },
   image: {
-    height: 150,
+    height: 100,
     width: 100,
+    // borderWidth: 1,
   },
   imageContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
+    alignItems: 'center',
 
     padding: 5,
-    marginBottom: 5,
+    margin: 5,
   },
 });
 

@@ -29,9 +29,9 @@ const ListHeader = () => {
       <View style={styles.headerItem}>
         <Text style={{fontWeight: '600'}}>ISBN</Text>
       </View>
-      <View style={styles.headerItem}>
+      {/* <View style={styles.headerItem}>
         <Text style={{fontWeight: '600'}}>Count</Text>
-      </View>
+      </View> */}
     </View>
   );
 };
@@ -102,11 +102,11 @@ const Books = props => {
           color="#00CCCC"
           onPress={() => props.navigation.navigate('BookForm')}
         />
-        <Button
+        {/* <Button
           title="Issues/Returns"
           color="#00CCCC"
           onPress={() => props.navigation.navigate('IssuesAdmin')}
-        />
+        /> */}
       </View>
       <View>
         <Header
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   },
   headerItem: {
     margin: 3,
-    width: width / 6,
+    width: width / 4,
   },
   spinner: {
     height: height / 2,

@@ -84,7 +84,7 @@ const ListItem = props => {
         <Text style={styles.item} numberOfLines={1}>
           {props.item.ISBN}
         </Text>
-        <Text style={styles.item}>{props.item.count}</Text>
+        {/* <Text style={styles.item}>{props.item.count}</Text> */}
       </TouchableOpacity>
     </View>
   );
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
   item: {
     flexWrap: 'wrap',
     margin: 3,
-    width: width / 6,
+    width: width / 4,
   },
   centeredView: {
     flex: 1,

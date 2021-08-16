@@ -1,5 +1,13 @@
 import React, {useEffect, useState, useContext} from 'react';
-import {View, Text, StyleSheet, Button, Keyboard} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Keyboard,
+  TouchableOpacity,
+  Button,
+} from 'react-native';
+
 import FormContainer from '../../components/FormContainer';
 import Input from '../../components/Input';
 import Error from '../../components/Error';
@@ -29,6 +37,7 @@ const Login = ({navigation}) => {
     } else {
       // console.log('success');
       loginUser(user, context.dispatch);
+      Keyboard.dismiss();
     }
   };
 
@@ -49,34 +58,71 @@ const Login = ({navigation}) => {
         value={password}
         onChangeText={text => setPassword(text)}
       />
-      <View style={styles.buttonGroup}>
-        {error ? <Error message={error} /> : null}
-        <Button
+
+      {error ? <Error message={error} /> : null}
+
+      <TouchableOpacity
+        style={styles.buttonContainer}
+        onPress={() => {
+          handleSubmit();
+          // Keyboard.dismiss;
+        }}>
+        {/* <View style={styles.buttonGroup}> */}
+        <Text style={styles.buttonText}>Login</Text>
+        {/* </View> */}
+      </TouchableOpacity>
+      {/* <Button
           title="Login"
           onPress={() => {
             handleSubmit();
-          }}
-        />
-      </View>
-      <View style={({marginTop: 40}, styles.buttonGroup)}>
-        <Text style={styles.middleText}>Don't have account?</Text>
-        <Button
+          }} */}
+
+      <Text style={styles.middleText}>Don't have account?</Text>
+      <TouchableOpacity
+        style={styles.buttonContainer}
+        onPress={() => {
+          navigation.navigate('Register');
+        }}>
+        {/* <View style={styles.buttonGroup}> */}
+        <Text style={styles.buttonText}>Register</Text>
+        {/* </View> */}
+      </TouchableOpacity>
+      {/* <Button
           title="Register"
           onPress={() => navigation.navigate('Register')}
-        />
-      </View>
+        /> */}
     </FormContainer>
   );
 };
 
 const styles = StyleSheet.create({
   buttonGroup: {
-    width: '80%',
+    width: '100%',
+    height: 100,
     alignItems: 'center',
+    // borderWidth: 1,
   },
   middleText: {
     marginBottom: 20,
     alignSelf: 'center',
+    marginTop: 20,
+  },
+  buttonContainer: {
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: '#ffff',
+    width: '30%',
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    backgroundColor: '#00CCCC',
+    borderRadius: 10,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 14,
   },
 });
 

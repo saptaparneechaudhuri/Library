@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect, useContext, useCallback} from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import AuthGlobal from '../Context/store/AuthGlobal';
 
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useFocusEffect} from '@react-navigation/native';
 
 const DetailItem = props => {
   return (
@@ -29,17 +30,8 @@ const BookDetailScreen = ({route, navigation}) => {
   const {item} = route.params;
   const context = useContext(AuthGlobal);
 
-  const [tokens, setTokens] = useState(0);
+  const [tokens, setTokens] = useState();
   const [jwtToken, setJwtToken] = useState();
-
-  // useEffect(() => {
-  //   // get the user id from AsyncStorage. The user was set in UserProfile Screen
-  //   AsyncStorage.getItem('user').then(res => setUser(res));
-
-  //   return () => {
-  //     setUser('');
-  //   };
-  // }, []);
 
   useEffect(() => {
     if (
@@ -57,21 +49,56 @@ const BookDetailScreen = ({route, navigation}) => {
             headers: {Authorization: `Bearer ${res}`},
           })
           .then(response => {
+            // console.log(response.data);
             setTokens(response.data.library_tokens);
 
             // Set the user id in Async Storage
             AsyncStorage.setItem('user', response.data.id);
-          });
+          })
+          .catch(err => console.log(err));
       })
       .catch(error => console.log(error));
-
     return () => {
-      // setUserProfile('');
       // setTokens(0);
     };
   }, [context.stateUser.isAuthenticated]);
 
+  // PUT request to update the library_tokens in the datsbase
+
+  useEffect(() => {
+    userProfileApi
+      .put(
+        `/${context.stateUser.user.userId}`,
+        {
+          library_tokens: tokens,
+        },
+        {
+          headers: {Authorization: `Bearer ${jwtToken}`},
+        },
+      )
+      .then(response => {
+        // console.log(response.data);
+        console.log('tokens', tokens);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }, [tokens]);
+
   const lendBook = book => {
+    if (tokens <= 0) {
+      Toast.show({
+        topOffset: 60,
+        type: 'error',
+        text1: `Not Enough Tokens`,
+        text2: 'Please return a book',
+      });
+      setTokens(0);
+      return;
+    } else {
+      setTokens(tokens - 1);
+    }
+
     // Add book to the IssueReturn collection in the database
 
     issuesApi
@@ -84,7 +111,7 @@ const BookDetailScreen = ({route, navigation}) => {
       .then(response => {
         if (response.status === 200) {
           // Decrement user's library token
-          setTokens(tokens - 1);
+          // setTokens(tokens - 1);
           // console.log(tokens);
           Toast.show({
             topOffset: 60,
@@ -92,21 +119,6 @@ const BookDetailScreen = ({route, navigation}) => {
             text1: `${book.title} Issued`,
             text2: 'Please visit issues screen',
           });
-
-          // Modify the user's library tokens
-          userProfileApi
-            .put(
-              `/${context.stateUser.user.userId}`,
-              {
-                library_tokens: tokens,
-              },
-              {
-                headers: {Authorization: `Bearer ${jwtToken}`},
-              },
-            )
-            .then(response => {
-              console.log('tokens', tokens);
-            });
 
           // setTimeout(() => {
           //   navigation.navigate('BooksScreen');
@@ -143,10 +155,9 @@ const BookDetailScreen = ({route, navigation}) => {
       </TouchableOpacity>
       <View style={{borderWidth: 1, marginTop: 15}}>
         <DetailItem>Title: {item.title}</DetailItem>
-        <DetailItem>Count: {item.count}</DetailItem>
+        {/* <DetailItem>Count: {item.count}</DetailItem> */}
         <DetailItem>Authors: {item.authors.map(author => author)}</DetailItem>
-        <Text>{tokens}</Text>
-        {/* <DetailItem>BookUIDs: {bookDetail.bookUID.map(uid => uid)}</DetailItem> */}
+        {/* <Text>{tokens}</Text> */}
       </View>
     </ScrollView>
   );
