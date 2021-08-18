@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Button,
   KeyboardAvoidingView,
+  TouchableOpacity,
 } from 'react-native';
 import FormContainer from '../../components/FormContainer';
 import Input from '../../components/Input';
@@ -75,15 +76,25 @@ const Register = ({navigation}) => {
         onChangeText={text => setPassword(text)}
       />
       <View>{error ? <Error message={error} /> : null}</View>
-      <View style={styles.buttonGroup}>
+      <TouchableOpacity
+        style={styles.buttonContainer}
+        onPress={() => register()}>
+        <Text style={styles.buttonText}>Register</Text>
+      </TouchableOpacity>
+      {/* <View style={styles.buttonGroup}>
         <Button title="Register" onPress={() => register()} />
-      </View>
-      <View>
+      </View> */}
+      <TouchableOpacity
+        style={styles.buttonContainer}
+        onPress={() => navigation.navigate('Login')}>
+        <Text style={styles.buttonText}>Back to Login</Text>
+      </TouchableOpacity>
+      {/* <View>
         <Button
           title="Back to Login"
           onPress={() => navigation.navigate('Login')}
         />
-      </View>
+      </View> */}
     </FormContainer>
   );
 };
@@ -93,6 +104,23 @@ const styles = StyleSheet.create({
     width: '80%',
     margin: 10,
     alignItems: 'center',
+  },
+  buttonContainer: {
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: '#ffff',
+    width: '30%',
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    backgroundColor: '#00CCCC',
+    borderRadius: 10,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 14,
   },
 });
 

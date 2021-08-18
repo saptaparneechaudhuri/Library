@@ -22,7 +22,11 @@ const Login = ({navigation}) => {
 
   useEffect(() => {
     if (context.stateUser.isAuthenticated === true) {
-      navigation.navigate('BooksScreen');
+      if (context.stateUser.user.isAdmin === true) {
+        navigation.navigate('BooksAdmin');
+      } else {
+        navigation.navigate('BooksScreen');
+      }
     }
   }, [context.stateUser.isAuthenticated]);
 

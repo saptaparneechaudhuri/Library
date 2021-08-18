@@ -102,11 +102,16 @@ const Books = props => {
           color="#00CCCC"
           onPress={() => props.navigation.navigate('BookForm')}
         />
-        {/* <Button
-          title="Issues/Returns"
+        <Button
+          title="Issues"
           color="#00CCCC"
-          onPress={() => props.navigation.navigate('IssuesAdmin')}
-        /> */}
+          onPress={() => props.navigation.navigate('Issues')}
+        />
+        <Button
+          title="Admin Profile"
+          color="#00CCCC"
+          onPress={() => props.navigation.navigate('AdminUser')}
+        />
       </View>
       <View>
         <Header

@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Image,
   Dimensions,
+  TouchableOpacity,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -124,13 +125,24 @@ const UserProfile = ({navigation}) => {
             Email: {userProfile ? userProfile.email : ''}
           </Text>
         </View>
-        <View style={{marginTop: 20}}>
-          <Text style={{margin: 10}}>
-            Library Tokens Left: {userProfile ? tokens : ''}
-          </Text>
-        </View>
+        {context.stateUser.user.isAdmin === true ? null : (
+          <View style={{marginTop: 20}}>
+            <Text style={{margin: 10}}>
+              Library Tokens Left: {userProfile ? tokens : ''}
+            </Text>
+          </View>
+        )}
 
-        <View style={{marginTop: 10}}>
+        <TouchableOpacity
+          style={styles.buttonContainer}
+          onPress={() => [
+            AsyncStorage.removeItem('jwt'),
+            logoutUser(context.dispatch),
+          ]}>
+          <Text style={styles.buttonText}>Sign Out</Text>
+        </TouchableOpacity>
+
+        {/* <View style={{marginTop: 10}}>
           <Button
             title={'Sign Out'}
             onPress={() => [
@@ -138,11 +150,14 @@ const UserProfile = ({navigation}) => {
               logoutUser(context.dispatch),
             ]}
           />
+        </View> */}
+      </View>
+      {context.stateUser.user.isAdmin === true ? null : (
+        <View style={{marginTop: 40}}>
+          <Text style={{margin: 10, fontSize: 20}}>My Shelf</Text>
         </View>
-      </View>
-      <View style={{marginTop: 40}}>
-        <Text style={{margin: 10, fontSize: 20}}>My Shelf</Text>
-      </View>
+      )}
+
       <View style={styles.subContainer}>
         {isLoading ? (
           <View style={styles.spinner}>
@@ -167,9 +182,11 @@ const UserProfile = ({navigation}) => {
                     <Text>Issued On: {item.issueDateFormat}</Text>
                     <Text>Return Due By: {item.returnDateFormat}</Text>
                     {/* <Text>Status: {item.status}</Text> */}
+
                     <View style={{width: '80%', marginTop: 10}}>
                       <Button
                         title="Return"
+                        color="#00CCCC"
                         onPress={() => {
                           // on return increment token and remove from shelf TODO
                           // remove book from issues
@@ -218,6 +235,23 @@ const styles = StyleSheet.create({
 
     padding: 5,
     margin: 5,
+  },
+  buttonContainer: {
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: '#ffff',
+    width: '30%',
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    backgroundColor: '#00CCCC',
+    borderRadius: 10,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 14,
   },
 });
 

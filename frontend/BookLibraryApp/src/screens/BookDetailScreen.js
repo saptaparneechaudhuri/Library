@@ -145,14 +145,17 @@ const BookDetailScreen = ({route, navigation}) => {
         source={{uri: item.image}}
         resizeMode="contain"
       />
-      <TouchableOpacity
-        style={styles.buttonContainer}
-        onPress={() => {
-          setTokens(tokens - 1);
-          lendBook(item);
-        }}>
-        <Text style={styles.buttonText}>Issue</Text>
-      </TouchableOpacity>
+      {context.stateUser.user.isAdmin === true ? null : (
+        <TouchableOpacity
+          style={styles.buttonContainer}
+          onPress={() => {
+            setTokens(tokens - 1);
+            lendBook(item);
+          }}>
+          <Text style={styles.buttonText}>Issue</Text>
+        </TouchableOpacity>
+      )}
+
       <View style={{borderWidth: 1, marginTop: 15}}>
         <DetailItem>Title: {item.title}</DetailItem>
         {/* <DetailItem>Count: {item.count}</DetailItem> */}

@@ -68,7 +68,11 @@ const BooksScreen = ({navigation}) => {
   };
   return (
     <View style={styles.container}>
-      <Header searchBar rounded style={{backgroundColor: '#FFFF'}}>
+      <Header
+        searchBar
+        rounded
+        style={{backgroundColor: '#FFFF'}}
+        androidStatusBarColor="#00CCCC">
         <Item>
           <Icon name="ios-search" />
           <Input placeholder="Search" onChangeText={text => searchBook(text)} />

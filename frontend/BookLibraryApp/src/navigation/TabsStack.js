@@ -27,11 +27,11 @@ const TabsStack = () => {
         indicatorStyle: {backgroundColor: '#ffff'},
       }}>
       <Tab.Screen name="Books" component={BooksScreen} />
-      <Tab.Screen name="Issues" component={IssuesScreen} />
+      {/* <Tab.Screen name="Issues" component={IssuesScreen} /> */}
       <Tab.Screen name="User" component={UserProfile} />
-      {context.stateUser.user.isAdmin === true ? (
+      {/* {context.stateUser.user.isAdmin === true ? (
         <Tab.Screen name="Admin" component={AdminStack} />
-      ) : null}
+      ) : null} */}
     </Tab.Navigator>
     // </NavigationContainer>
   );
